@@ -1,0 +1,26 @@
+{
+  "name": "create-html-project",
+  "version": "1.0.0",
+  "description": "Create empty boiler plate project with HTML, CSS and JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ernestas20111/create-html-project.git"
+  },
+  "keywords": [
+    "html",
+    "css",
+    "javascript",
+    "boilerplate",
+    "project"
+  ],
+  "author": "Ernestas Ščevinskas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ernestas20111/create-html-project/issues"
+  },
+  "homepage": "https://github.com/ernestas20111/create-html-project#readme"
+}
