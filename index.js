@@ -18,15 +18,18 @@ const getExternalPath = (name) => {
 };
 
 const createFolder = (name) => {
-  fs.mkdir(getExternalPath(name), (error) => {
-    if (error.code === 'EEXIST') {
+  try {
+		fs.mkdirSync(getExternalPath(name));
+	} 
+	catch(error) {
+		if (error.code === 'EEXIST') {
       console.error("Project's folder with such name already exists.");
       process.exit(1);
     } else {
       console.error("Error occurred while creating a project's folder.");
       process.exit(1);
     }
-  });
+	}
 };
 
 const createFile = (folderName, fileName) => {
