@@ -11,17 +11,25 @@ const getInternalPath = (name) => {
 	return path.join(__dirname, name);
 }
 
+const getExternalPath = (name) => {
+	return path.resolve(name);
+}
+
 const createFolder = (name) => {
-	fs.mkdir(getInternalPath(name), (error) => {
-		if (error) {
-			console.error(error);
+	try {
+		fs.mkdirSync(getExternalPath(name));
+	} 
+	catch(error) {
+		if (error.code !== 'EEXIST') {
+			throw error;
 		}
-	});
+	}
+	
 }
 
 const createFile = (folderName, fileName) => {
 	const file = fs.readFileSync(getInternalPath(`${internalFolderName}/${fileName}`), encoding)
-	fs.writeFileSync(getInternalPath(`${folderName}/${fileName}`), file);
+	fs.writeFileSync(getExternalPath(`${folderName}/${fileName}`), file);
 }
 
 const createFiles = (folderName) => {
