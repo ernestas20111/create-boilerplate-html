@@ -1,22 +1,35 @@
 const fs = require('fs');
-const path = require('path');	
+const path = require('path');
 
-const createDirectory = () => {
-	fs.mkdir(path.join(__dirname, 'project'), (error) => {
+const encoding = 'utf8';
+const internalFolderName = 'files';
+const htmlFileName = 'index.html';
+const cssFileName = 'index.css';
+const jsFileName = 'index.js';
+
+const getInternalPath = (name) => {
+	return path.join(__dirname, name);
+}
+
+const createFolder = (name) => {
+	fs.mkdir(getInternalPath(name), (error) => {
 		if (error) {
 			console.error(error);
 		}
 	});
 }
 
-const createFiles = () => {
-	const htmlFile = fs.readFileSync('files/index.html', 'utf8')
-	fs.writeFileSync('project/index.html', htmlFile)
-	const cssFile = fs.readFileSync('files/index.css', 'utf8')
-	fs.writeFileSync('project/index.css', cssFile)
-	const jsFile = fs.readFileSync('files/index.js', 'utf8')
-	fs.writeFileSync('project/index.js', jsFile)	
+const createFile = (folderName, fileName) => {
+	const file = fs.readFileSync(getInternalPath(`${internalFolderName}/${fileName}`), encoding)
+	fs.writeFileSync(getInternalPath(`${folderName}/${fileName}`), file);
 }
 
-createDirectory();
-createFiles();
+const createFiles = (folderName) => {
+	createFile(folderName, htmlFileName);
+	createFile(folderName, cssFileName);
+	createFile(folderName, jsFileName);
+}
+
+const projectName = 'project';
+createFolder(projectName);
+createFiles(projectName);
