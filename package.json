@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/ernestas20111/create-html-project/issues"
   },
-  "homepage": "https://github.com/ernestas20111/create-html-project#readme"
+  "homepage": "https://github.com/ernestas20111/create-html-project#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4"
+  }
 }
