@@ -4,7 +4,7 @@
   "description": "Create empty boiler plate project with HTML, CSS and JavaScript.",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
