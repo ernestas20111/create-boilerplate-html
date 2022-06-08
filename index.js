@@ -53,9 +53,10 @@ const createFile = (folderName, fileName) => {
 };
 
 const addTagToFile = (file, closingTagToMatch, tagToBeInserted) => {
+  const entireMatchedString = '$&';
   return file.replace(
     closingTagToMatch,
-    '  ' + tagToBeInserted + '\n  $&'
+    '  ' + tagToBeInserted + '\n  ' + entireMatchedString
   );
 };
 
