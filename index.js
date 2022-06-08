@@ -7,6 +7,8 @@ const internalFolderName = 'files';
 const htmlFileName = 'index.html';
 const cssFileName = 'index.css';
 const jsFileName = 'index.js';
+const cssFileTag = '<link rel="stylesheet" type="text/css" href="index.css">';
+const jsFileTag = '<script src="index.js"></script>';
 const projectTypes = ['HTML', 'HTML, CSS', 'HTML, CSS, JS'];
 
 const getInternalPath = (name) => {
@@ -17,28 +19,53 @@ const getExternalPath = (name) => {
   return path.resolve(name);
 };
 
-const createFolder = (name) => {
+const exitWithErrorMessage = (errorMessage = "Error occurred while creating a project's folder.") => {
+  console.error(errorMessage);
+  process.exit(1);
+}
+
+const createFolder = (folderName) => {
   try {
-		fs.mkdirSync(getExternalPath(name));
+		fs.mkdirSync(getExternalPath(folderName));
 	} 
 	catch(error) {
-		if (error.code === 'EEXIST') {
-      console.error("Project's folder with such name already exists.");
-      process.exit(1);
-    } else {
-      console.error("Error occurred while creating a project's folder.");
-      process.exit(1);
-    }
+		if (error.code === 'EEXIST') exitWithErrorMessage("Project's folder with such name already exists.");
+    exitWithErrorMessage();
 	}
 };
 
-const createFile = (folderName, fileName) => {
-  const file = fs.readFileSync(
+const readFile = (fileName) => {
+  return fs.readFileSync(
     getInternalPath(`${internalFolderName}/${fileName}`),
     encoding
   );
-  fs.writeFileSync(getExternalPath(`${folderName}/${fileName}`), file);
 };
+
+const writeFile = (folderName, fileName, file) => {
+  fs.writeFileSync(getExternalPath(`${folderName}/${fileName}`), file);
+}
+
+const createFile = (folderName, fileName) => {
+  const file = readFile(fileName);
+  writeFile(folderName, fileName, file);
+};
+
+const addTagToFile = (file, closingTagToInsertBefore, tagToBeInserted) => {
+  return file.replace(closingTagToInsertBefore, '  ' + tagToBeInserted + '\n  $&');
+};
+
+const createFiles = (folderName, projectType) => {
+  let htmlFile = readFile(htmlFileName);
+  if (projectTypes[1] === projectType || projectTypes[2] === projectType) {
+    createFile(folderName, cssFileName);
+    htmlFile = addTagToFile(htmlFile, '</head>', cssFileTag);
+  }
+  if (projectTypes[2] === projectType) {
+    createFile(folderName, jsFileName);
+    htmlFile = addTagToFile(htmlFile, '</body>', jsFileTag);
+  }
+  writeFile(folderName, htmlFileName, htmlFile);
+}
 
 const projectTypePrompt = (projectName) => {
   inquirer
@@ -51,18 +78,10 @@ const projectTypePrompt = (projectName) => {
       }
     ])
     .then(({ projectType }) => {
-      createFile(projectName, htmlFileName);
-      if (projectTypes[1] === projectType || projectTypes[2] === projectType) {
-        createFile(projectName, cssFileName);
-      }
-      if (projectType === projectTypes[2]) {
-        createFile(projectName, jsFileName);
-      }
+      createFolder(projectName);
+      createFiles(projectName, projectType);
     })
-    .catch(() => {
-      console.error('Error occurred while creating a project.');
-      process.exit(1);
-    });
+    .catch(() => exitWithErrorMessage());
 };
 
 const projectNamePrompt = () => {
@@ -75,14 +94,8 @@ const projectNamePrompt = () => {
         default: 'project'
       }
     ])
-    .then(({ projectName }) => {
-      createFolder(projectName);
-      projectTypePrompt(projectName);
-    })
-    .catch(() => {
-      console.error('Error occurred while creating a project.');
-      process.exit(1);
-    });
+    .then(({ projectName }) => projectTypePrompt(projectName))
+    .catch(() => exitWithErrorMessage());
 };
 
 projectNamePrompt();
