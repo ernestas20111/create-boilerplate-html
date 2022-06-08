@@ -19,19 +19,21 @@ const getExternalPath = (name) => {
   return path.resolve(name);
 };
 
-const exitWithErrorMessage = (errorMessage = "Error occurred while creating a project's folder.") => {
+const exitWithErrorMessage = (
+  errorMessage = "Error occurred while creating a project's folder."
+) => {
   console.error(errorMessage);
   process.exit(1);
-}
+};
 
 const createFolder = (folderName) => {
   try {
-		fs.mkdirSync(getExternalPath(folderName));
-	} 
-	catch(error) {
-		if (error.code === 'EEXIST') exitWithErrorMessage("Project's folder with such name already exists.");
-    exitWithErrorMessage();
-	}
+    fs.mkdirSync(getExternalPath(folderName));
+  } catch (error) {
+    if (error.code === 'EEXIST')
+      exitWithErrorMessage("Project's folder with such name already exists.");
+    else exitWithErrorMessage();
+  }
 };
 
 const readFile = (fileName) => {
@@ -43,15 +45,18 @@ const readFile = (fileName) => {
 
 const writeFile = (folderName, fileName, file) => {
   fs.writeFileSync(getExternalPath(`${folderName}/${fileName}`), file);
-}
+};
 
 const createFile = (folderName, fileName) => {
   const file = readFile(fileName);
   writeFile(folderName, fileName, file);
 };
 
-const addTagToFile = (file, closingTagToInsertBefore, tagToBeInserted) => {
-  return file.replace(closingTagToInsertBefore, '  ' + tagToBeInserted + '\n  $&');
+const addTagToFile = (file, closingTagToMatch, tagToBeInserted) => {
+  return file.replace(
+    closingTagToMatch,
+    '  ' + tagToBeInserted + '\n  $&'
+  );
 };
 
 const createFiles = (folderName, projectType) => {
@@ -65,7 +70,7 @@ const createFiles = (folderName, projectType) => {
     htmlFile = addTagToFile(htmlFile, '</body>', jsFileTag);
   }
   writeFile(folderName, htmlFileName, htmlFile);
-}
+};
 
 const projectTypePrompt = (projectName) => {
   inquirer
