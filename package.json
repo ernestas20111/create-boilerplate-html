@@ -1,6 +1,6 @@
 {
   "name": "create-boilerplate-html",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Create empty boiler plate project with HTML, CSS and JavaScript.",
   "main": "index.js",
   "bin": "index.js",
