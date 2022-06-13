@@ -5,15 +5,14 @@ const path = require('path');
 
 const encoding = 'utf8';
 const internalFolderName = 'files';
-const htmlFileName = 'index.html';
-const cssFileName = 'index.css';
-const jsFileName = 'index.js';
-const cssFileTag = '<link rel="stylesheet" type="text/css" href="index.css">';
-const jsFileTag = '<script src="index.js"></script>';
-const projectTypes = ['HTML', 'HTML, CSS', 'HTML, CSS, JS'];
+const projectTypesMap = new Map([
+  ['HTML', 'html'],
+  ['HTML, CSS', 'html-css'],
+  ['HTML, CSS, JS', 'html-css-js']
+]);
 
 const getInternalPath = (name) => {
-  return path.join(__dirname, name);
+  return path.join(__dirname, `${internalFolderName}/${name}`);
 };
 
 const getExternalPath = (name) => {
@@ -27,6 +26,14 @@ const exitWithErrorMessage = (
   process.exit(1);
 };
 
+const getFolderFilesNames = (folderName) => {
+  try {
+    return fs.readdirSync(getInternalPath(folderName));
+  } catch (error) {
+    exitWithErrorMessage('Unable to scan directory: ' + error);
+  }
+};
+
 const createFolder = (folderName) => {
   try {
     fs.mkdirSync(getExternalPath(folderName));
@@ -37,44 +44,31 @@ const createFolder = (folderName) => {
   }
 };
 
-const readFile = (fileName) => {
-  return fs.readFileSync(
-    getInternalPath(`${internalFolderName}/${fileName}`),
-    encoding
-  );
+const readFile = (filePath) => {
+  return fs.readFileSync(getInternalPath(filePath), encoding);
 };
 
-const writeFile = (folderName, fileName, file) => {
-  fs.writeFileSync(getExternalPath(`${folderName}/${fileName}`), file);
+const writeFile = (filePath, file) => {
+  fs.writeFileSync(getExternalPath(filePath), file);
 };
 
-const createFile = (folderName, fileName) => {
-  const file = readFile(fileName);
-  writeFile(folderName, fileName, file);
+const createFile = (sourceFolderName, destinationFolderName, fileName) => {
+  const sourceFilePath = `${sourceFolderName}/${fileName}`;
+  const destinationFilePath = `${destinationFolderName}/${fileName}`;
+  const file = readFile(sourceFilePath);
+  writeFile(destinationFilePath, file);
 };
 
-const addTagToFile = (file, closingTagToMatch, tagToBeInserted) => {
-  const entireMatchedString = '$&';
-  return file.replace(
-    closingTagToMatch,
-    '  ' + tagToBeInserted + '\n  ' + entireMatchedString
-  );
-};
-
-const createFiles = (folderName, projectType) => {
-  let htmlFile = readFile(htmlFileName);
-  if (projectTypes[1] === projectType || projectTypes[2] === projectType) {
-    createFile(folderName, cssFileName);
-    htmlFile = addTagToFile(htmlFile, '</head>', cssFileTag);
+const createFiles = (projectName, projectType) => {
+  const folderName = projectTypesMap.get(projectType);
+  const fileNames = getFolderFilesNames(folderName);
+  for (const fileName of fileNames) {
+    createFile(folderName, projectName, fileName);
   }
-  if (projectTypes[2] === projectType) {
-    createFile(folderName, jsFileName);
-    htmlFile = addTagToFile(htmlFile, '</body>', jsFileTag);
-  }
-  writeFile(folderName, htmlFileName, htmlFile);
 };
 
 const projectTypePrompt = (projectName) => {
+  const projectTypes = Array.from(projectTypesMap.keys());
   inquirer
     .prompt([
       {
