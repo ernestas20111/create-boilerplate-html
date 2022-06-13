@@ -54,9 +54,9 @@ const writeFile = (filePath, file) => {
 
 const createFile = (sourceFolderName, destinationFolderName, fileName) => {
   const sourceFilePath = `${sourceFolderName}/${fileName}`;
-  const writeFilePath = `${destinationFolderName}/${fileName}`;
+  const destinationFilePath = `${destinationFolderName}/${fileName}`;
   const file = readFile(sourceFilePath);
-  writeFile(writeFilePath, file);
+  writeFile(destinationFilePath, file);
 };
 
 const createFiles = (projectName, projectType) => {
